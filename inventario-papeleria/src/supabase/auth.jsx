@@ -39,8 +39,6 @@ export async function login(email, password) {
   if (loginError) throw loginError;
 
   const userId = sessionData.user.id;
-
-  // Obtener datos de tu tabla usuario (para rol, etc.)
   const { data: userData, error: userError } = await supabase
     .from("usuario")
     .select(`
