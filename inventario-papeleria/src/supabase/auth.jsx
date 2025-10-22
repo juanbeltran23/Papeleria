@@ -54,37 +54,6 @@ export async function registerSolicitante({ email, password, nombre, apellidos, 
 }
 
 /**
- * CREAR USUARIO GESTOR (ADMIN)
- * - Solo el administrador usa esto.
- * - Crea usuario en Auth y lo registra en "usuario" con rol = 2.
- */
-export async function createGestor({ email, password, nombre, apellidos, cedula }) {
-  const { data: authData, error: authError } = await supabase.auth.signUp({
-    email,
-    password,
-  });
-  if (authError) throw authError;
-
-  const userId = authData.user?.id;
-  if (!userId) throw new Error("No se pudo obtener el ID del nuevo gestor.");
-
-  const { error: insertError } = await supabase.from("usuario").insert([
-    {
-      idauth: userId,
-      nombre,
-      apellidos,
-      cedula,
-      correo: email,
-      idrol: 2, // Gestor
-    },
-  ]);
-
-  if (insertError) throw insertError;
-
-  return authData.user;
-}
-
-/**
  * LOGIN
  * - Autentica al usuario y obtiene sus datos completos (rol incluido)
  */

@@ -1,13 +1,11 @@
+// src/App.jsx
+import AppRouter from "./routers/AppRouter";
+import { Toaster } from "react-hot-toast";
 
-
-function App() {
-
+export default function App() {
   return (
     <>
-      <h1 className='bg-red-500'>hola</h1>
+      <AppRouter />
     </>
-  )
+  );
 }
-
-
-export default App

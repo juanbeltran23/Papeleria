@@ -1,45 +1,40 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { login } from "../supabase/auth.jsx";
+import { toast } from "react-toastify";
 
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError("");
+    if (!email || !password) return toast.error("Correo y contraseña son obligatorios");
+
     setLoading(true);
     try {
       const user = await login(email.trim(), password);
+      toast.success("Inicio de sesión exitoso 👋");
       if (user.rol.nombre === "Administrador") navigate("/admin");
       else if (user.rol.nombre === "Gestor") navigate("/gestor");
       else navigate("/solicitante");
     } catch (err) {
-      setError(err.message || "Error al iniciar sesión");
+      toast.error(err.message || "Error al iniciar sesión");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-slate-50 to-slate-100 p-6">
+    <div className="min-h-screen flex items-center justify-center bg-linear-to-b from-slate-50 to-slate-100 p-6">
       <form
         onSubmit={handleSubmit}
         className="bg-white p-8 rounded-3xl shadow-lg w-full max-w-md mx-auto"
-        aria-live="polite"
       >
         <h2 className="text-2xl font-semibold mb-4 text-center text-slate-800">Iniciar sesión</h2>
-
-        {error && (
-          <div className="mb-4 text-sm text-red-600 bg-red-50 border border-red-100 p-2 rounded">
-            {error}
-          </div>
-        )}
 
         <label className="block text-sm text-slate-700 mb-1">Correo</label>
         <input
@@ -65,7 +60,7 @@ export default function Login() {
           />
           <button
             type="button"
-            onClick={() => setShowPassword(s => !s)}
+            onClick={() => setShowPassword((s) => !s)}
             className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-700"
             aria-label={showPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
           >
@@ -84,16 +79,10 @@ export default function Login() {
 
         <button
           type="submit"
-          className="w-full inline-flex items-center justify-center gap-2 bg-blue-600 text-white py-3 rounded-xl hover:bg-blue-700 active:scale-95 transition"
+          className="w-full bg-blue-600 text-white py-3 rounded-xl hover:bg-blue-700 active:scale-95 transition"
           disabled={loading}
         >
-          {loading ? (
-            <svg className="animate-spin h-5 w-5 text-white" viewBox="0 0 24 24" fill="none">
-              <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" className="opacity-25" />
-              <path d="M4 12a8 8 0 018-8" stroke="currentColor" strokeWidth="4" strokeLinecap="round" />
-            </svg>
-          ) : null}
-          Entrar
+          {loading ? "Cargando..." : "Entrar"}
         </button>
 
         <div className="mt-4 text-center">
