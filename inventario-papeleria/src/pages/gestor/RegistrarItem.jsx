@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
-import { createItem, getItems, updateItem, deleteItem } from "../../supabase/itemsService";
+import { createItem, getCategorias, createCategoria } from "../../supabase/itemsService";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 export default function RegistrarItem() {
   const [form, setForm] = useState({
@@ -12,45 +14,53 @@ export default function RegistrarItem() {
     inventarioInicial: "",
     imagen: null,
   });
-  const [items, setItems] = useState([]);
+
+  const [categorias, setCategorias] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [editingId, setEditingId] = useState(null);
-  const [error, setError] = useState("");
+  const [nuevaCategoria, setNuevaCategoria] = useState("");
+  const [mostrarInputCategoria, setMostrarInputCategoria] = useState(false);
 
   useEffect(() => {
-    fetchItems();
-  }, []);
-
-  async function fetchItems() {
-    try {
-      const data = await getItems();
-      setItems(data);
-    } catch (err) {
-      console.error(err);
+    async function fetchCategorias() {
+      try {
+        const data = await getCategorias();
+        setCategorias(data || []);
+      } catch {
+        toast.error("Error al cargar categorías.");
+      }
     }
-  }
+    fetchCategorias();
+  }, []);
 
   function handleChange(e) {
     const { name, value, files } = e.target;
-    if (files) {
-      setForm((prev) => ({ ...prev, [name]: files[0] }));
-    } else {
-      setForm((prev) => ({ ...prev, [name]: value }));
+    setForm({ ...form, [name]: files ? files[0] : value });
+  }
+
+  async function handleAddCategoria() {
+    if (!nuevaCategoria.trim()) {
+      toast.warning("Por favor ingresa un nombre para la categoría.");
+      return;
+    }
+
+    try {
+      const nueva = await createCategoria(nuevaCategoria.trim());
+      setCategorias([...categorias, nueva]);
+      setForm({ ...form, idCategoria: nueva.idCategoria });
+      setNuevaCategoria("");
+      setMostrarInputCategoria(false);
+      toast.success("Categoría añadida correctamente.");
+    } catch {
+      toast.error("Error al crear la categoría.");
     }
   }
 
   async function handleSubmit(e) {
     e.preventDefault();
-    setError("");
     setLoading(true);
-
     try {
-      if (editingId) {
-        await updateItem(editingId, form);
-        setEditingId(null);
-      } else {
-        await createItem(form);
-      }
+      await createItem(form);
+      toast.success("Ítem registrado correctamente.");
       setForm({
         codigo: "",
         nombre: "",
@@ -61,65 +71,37 @@ export default function RegistrarItem() {
         inventarioInicial: "",
         imagen: null,
       });
-      await fetchItems();
-    } catch (err) {
-      console.error(err);
-      setError("Error al guardar el ítem.");
+    } catch {
+      toast.error("Error al registrar el ítem.");
     } finally {
       setLoading(false);
     }
   }
 
-  async function handleDelete(id) {
-    if (confirm("¿Seguro que deseas eliminar este ítem?")) {
-      await deleteItem(id);
-      await fetchItems();
-    }
-  }
-
-  function handleEdit(item) {
-    setEditingId(item.idItem);
-    setForm({
-      codigo: item.codigo,
-      nombre: item.nombre,
-      idCategoria: item.idCategoria,
-      tipo: item.tipo,
-      unidad: item.unidad,
-      stockMinimo: item.stockMinimo,
-      inventarioInicial: item.inventarioInicial,
-      imagen: null,
-    });
-  }
-
-  function handleCancel() {
-    setEditingId(null);
-    setForm({
-      codigo: "",
-      nombre: "",
-      idCategoria: "",
-      tipo: "",
-      unidad: "",
-      stockMinimo: "",
-      inventarioInicial: "",
-      imagen: null,
-    });
-  }
-
   return (
-    <div className="min-h-screen flex flex-col md:flex-row gap-6 bg-linear-to-b from-slate-50 to-slate-100 p-6">
-      {/* Formulario */}
-      <form onSubmit={handleSubmit} className="bg-white p-8 rounded-3xl shadow-lg w-full md:w-1/2">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-slate-50 to-slate-100 p-6">
+      <ToastContainer position="top-right" autoClose={3000} />
+
+      <form
+        onSubmit={handleSubmit}
+        className="bg-white p-8 rounded-3xl shadow-lg w-full max-w-2xl mx-auto"
+      >
         <h2 className="text-2xl font-semibold mb-6 text-center text-slate-800">
-          {editingId ? "Editar Ítem" : "Registrar Ítem"}
+          Registrar Ítem
         </h2>
 
-        {error && <div className="mb-4 text-sm text-red-600 bg-red-50 border border-red-100 p-2 rounded">{error}</div>}
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
           {["codigo", "nombre", "tipo", "unidad", "stockMinimo", "inventarioInicial"].map((field) => (
             <div key={field}>
-              <label className="block text-sm text-slate-600 mb-1 capitalize">{field}</label>
+              <label className="block text-sm text-slate-600 mb-1 capitalize">
+                {field === "stockMinimo"
+                  ? "Stock mínimo"
+                  : field === "inventarioInicial"
+                  ? "Inventario inicial"
+                  : field}
+              </label>
               <input
+                type={["stockMinimo", "inventarioInicial"].includes(field) ? "number" : "text"}
                 name={field}
                 value={form[field]}
                 onChange={handleChange}
@@ -130,25 +112,60 @@ export default function RegistrarItem() {
           ))}
 
           <div>
-            <label className="block text-sm text-slate-600 mb-1">Categoría (ID)</label>
-            <input
+            <label className="block text-sm text-slate-600 mb-1">Categoría</label>
+            <select
               name="idCategoria"
               value={form.idCategoria}
               onChange={handleChange}
               required
-              type="number"
               className="w-full border border-slate-200 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-300"
-            />
+            >
+              <option value="">Seleccionar categoría</option>
+              {categorias.map((cat) => (
+                <option key={cat.idCategoria} value={cat.idCategoria}>
+                  {cat.nombre}
+                </option>
+              ))}
+            </select>
           </div>
 
-          <div>
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => setMostrarInputCategoria(!mostrarInputCategoria)}
+              className="bg-green-600 text-white px-4 py-3 rounded-lg hover:bg-green-700 transition w-full sm:w-auto"
+            >
+              Añadir categoría
+            </button>
+          </div>
+
+          {mostrarInputCategoria && (
+            <div className="sm:col-span-2 flex flex-col sm:flex-row gap-2 items-center">
+              <input
+                type="text"
+                placeholder="Nueva categoría"
+                value={nuevaCategoria}
+                onChange={(e) => setNuevaCategoria(e.target.value)}
+                className="flex-1 border border-slate-200 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-300"
+              />
+              <button
+                type="button"
+                onClick={handleAddCategoria}
+                className="bg-blue-600 text-white px-4 py-3 rounded-lg hover:bg-blue-700 transition w-full sm:w-auto"
+              >
+                Guardar
+              </button>
+            </div>
+          )}
+
+          <div className="sm:col-span-2">
             <label className="block text-sm text-slate-600 mb-1">Imagen</label>
             <input
               type="file"
               name="imagen"
               accept="image/*"
               onChange={handleChange}
-              className="w-full text-sm"
+              className="w-full border border-slate-200 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-300"
             />
           </div>
         </div>
@@ -159,57 +176,17 @@ export default function RegistrarItem() {
             disabled={loading}
             className="flex-1 bg-blue-600 text-white py-3 rounded-xl hover:bg-blue-700 active:scale-95 transition"
           >
-            {loading ? "Guardando..." : editingId ? "Guardar cambios" : "Registrar"}
+            {loading ? "Registrando..." : "Registrar Ítem"}
           </button>
-          {editingId && (
-            <button
-              type="button"
-              onClick={handleCancel}
-              className="flex-1 bg-gray-100 text-slate-700 py-3 rounded-xl hover:bg-gray-200 transition"
-            >
-              Cancelar
-            </button>
-          )}
+          <button
+            type="button"
+            onClick={() => window.history.back()}
+            className="flex-1 bg-gray-100 text-slate-700 py-3 rounded-xl hover:bg-gray-200 transition"
+          >
+            Cancelar
+          </button>
         </div>
       </form>
-
-      {/* Lista de ítems */}
-      <div className="bg-white p-6 rounded-3xl shadow-lg w-full md:w-1/2 overflow-x-auto">
-        <h3 className="text-xl font-semibold mb-4 text-slate-800">Lista de Ítems</h3>
-        <table className="w-full text-sm text-left border-collapse">
-          <thead>
-            <tr className="bg-slate-100 text-slate-600">
-              <th className="p-2">Código</th>
-              <th className="p-2">Nombre</th>
-              <th className="p-2">Stock</th>
-              <th className="p-2 text-center">Acciones</th>
-            </tr>
-          </thead>
-          <tbody>
-            {items.map((item) => (
-              <tr key={item.idItem} className="border-b">
-                <td className="p-2">{item.codigo}</td>
-                <td className="p-2">{item.nombre}</td>
-                <td className="p-2">{item.stockReal}</td>
-                <td className="p-2 flex justify-center gap-2">
-                  <button
-                    onClick={() => handleEdit(item)}
-                    className="px-3 py-1 text-sm bg-yellow-400 hover:bg-yellow-500 text-white rounded-md"
-                  >
-                    Editar
-                  </button>
-                  <button
-                    onClick={() => handleDelete(item.idItem)}
-                    className="px-3 py-1 text-sm bg-red-500 hover:bg-red-600 text-white rounded-md"
-                  >
-                    Eliminar
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
     </div>
   );
 }

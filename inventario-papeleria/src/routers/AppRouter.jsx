@@ -3,10 +3,11 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Login from "../pages/Login";
 import Register from "../pages/Register";
 import AdminDashboard from "../pages/admin/AdminDashboard";
-import GestorDashboard from "../pages/gestor/GestorDashboard";
-import SolicitanteDashboard from "../pages/solicitante/SolicitanteDashboard";
 import GestorPanel from "../pages/admin/GestorPanel";
-import RegistrarItem from "../pages/gestor/RegistrarItem";  
+import Items from "../pages/gestor/Items";
+import RegistrarItem from "../pages/gestor/RegistrarItem";
+import DetalleItem from "../pages/gestor/DetalleItem"; // Asegúrate de importar esto si lo usas
+import SolicitanteDashboard from "../pages/solicitante/SolicitanteDashboard";
 import Perfil from "../components/Perfil";
 import Layout from "../layouts/MainLayout";
 import ProtectedRoute from "../components/ProtectedRoute";
@@ -19,7 +20,43 @@ export default function AppRouter() {
         <Route path="/" element={<Login />} />
         <Route path="/register" element={<Register />} />
 
-        {/* Agrupamos las rutas protegidas bajo el mismo Layout */}
+        {/* ADMIN */}
+        <Route
+          element={
+            <ProtectedRoute allowedRole={["1"]}>
+              <Layout />
+            </ProtectedRoute>
+          }
+        >
+          <Route path="/admin" element={<AdminDashboard />} />
+          <Route path="/admin/gestores" element={<GestorPanel />} />
+        </Route>
+
+        {/* GESTOR */}
+        <Route
+          element={
+            <ProtectedRoute allowedRole={["2"]}>
+              <Layout />
+            </ProtectedRoute>
+          }
+        >
+          <Route path="/gestor" element={<Items />} />
+          <Route path="/items/:id" element={<DetalleItem />} />
+          <Route path="/items/registrar" element={<RegistrarItem />} />
+        </Route>
+
+        {/* SOLICITANTE */}
+        <Route
+          element={
+            <ProtectedRoute allowedRole={["3"]}>
+              <Layout />
+            </ProtectedRoute>
+          }
+        >
+          <Route path="/solicitante" element={<SolicitanteDashboard />} />
+        </Route>
+
+        {/* PERFIL (común a todos) */}
         <Route
           element={
             <ProtectedRoute allowedRole={["1", "2", "3"]}>
@@ -27,17 +64,6 @@ export default function AppRouter() {
             </ProtectedRoute>
           }
         >
-          {/* ADMIN */}
-          <Route path="/admin" element={<AdminDashboard />} />
-          <Route path="/admin/gestores" element={<GestorPanel />} />
-
-          {/* GESTOR */}
-          <Route path="/gestor" element={<RegistrarItem />} />
-
-          {/* SOLICITANTE */}
-          <Route path="/solicitante" element={<SolicitanteDashboard />} />
-
-          {/* PERFIL (común a todos) */}
           <Route path="/perfil" element={<Perfil />} />
         </Route>
 

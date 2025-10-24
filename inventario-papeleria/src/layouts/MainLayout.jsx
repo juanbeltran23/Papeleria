@@ -4,7 +4,6 @@ import { useNavigate, Outlet } from "react-router-dom";
 import { logout, getCurrentUser } from "../supabase/auth";
 import Sidebar from "../components/Sidebar";
 import Navbar from "../components/Navbar";
-import { ToastContainer } from "react-toastify";
 
 export default function Layout() {
   const [user, setUser] = useState(null);
@@ -32,8 +31,7 @@ export default function Layout() {
       </div>
     );
 
-  // Menú según el rol
-  const role = user.idrol;
+  const role = user.idRol;
   const menuItems = {
     1: [
       { name: "Dashboard", path: "/admin" },
@@ -60,10 +58,8 @@ export default function Layout() {
   const items = menuItems[role] || [];
 
   return (
-    <div
-      className="min-h-screen w-screen overflow-hidden flex flex-col bg-gray-50 dark:bg-gray-900"
-      style={{ maxWidth: "100vw" }}
-    >
+    <div className="flex h-screen w-screen overflow-hidden bg-gray-50 dark:bg-gray-900">
+      {/* Sidebar */}
       <Sidebar
         items={items}
         onLogout={handleLogout}
@@ -73,35 +69,24 @@ export default function Layout() {
         setCollapsed={setCollapsed}
       />
 
-      <Navbar
-        user={user}
-        onToggleSidebar={() => setSidebarOpen(true)}
-        onExpandSidebar={() => setCollapsed(false)}
-        onLogout={handleLogout}
-      />
-
+      {/* Contenido principal */}
       <div
-        className={`flex-1 flex flex-col transition-all duration-300 overflow-y-auto 
-        ${isCollapsed ? "sm:ml-20" : "sm:ml-64"} sm:pt-14 pt-16`}
-        style={{ width: "100%", maxWidth: "100vw", overflowX: "hidden" }}
+        className={`flex flex-col flex-1 transition-all duration-300 ${
+          isCollapsed ? "sm:ml-20" : "sm:ml-64"
+        }`}
       >
-        {/* Renderiza la ruta activa */}
-        <main className="flex-1 px-4 sm:px-6 py-6">
+        {/* Navbar */}
+        <Navbar
+          user={user}
+          onToggleSidebar={() => setSidebarOpen(true)}
+          onExpandSidebar={() => setCollapsed(false)}
+          onLogout={handleLogout}
+        />
+
+        {/* Contenido */}
+        <main className="flex-1 overflow-y-auto pt-16 px-4 sm:px-6 pb-6">
           <Outlet />
         </main>
-        {/* Contenedor global para notificaciones */}
-      <ToastContainer
-        position="top-right"
-        autoClose={2500}
-        hideProgressBar={false}
-        newestOnTop={false}
-        closeOnClick
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-        theme="colored"
-      />
-
       </div>
     </div>
   );

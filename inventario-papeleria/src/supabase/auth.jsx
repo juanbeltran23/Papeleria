@@ -27,22 +27,22 @@ export async function registerSolicitante({ email, password, nombre, apellidos, 
         apellidos,
         cedula,
         correo: email,
-        idrol: 3, // solicitante por defecto
+        idRol: 3, // solicitante por defecto
       },
     ])
-    .select("idusuario") // recuperamos el idUsuario recién insertado
+    .select("idUsuario") // recuperamos el idUsuario recién insertado
     .single();
 
   if (insertUsuarioError) throw insertUsuarioError;
 
-  const idusuario = usuarioData.idusuario;
+  const idUsuario = usuarioData.idUsuario;
 
   // Insertar en tabla solicitante (relacionada con usuario)
   const { error: insertSolicitanteError } = await supabase
     .from("solicitante")
     .insert([
       {
-        idusuario: idusuario,
+        idUsuario: idUsuario,
         area,
         cargo,
       },
@@ -70,7 +70,7 @@ export async function login(email, password) {
   //obtener datos de tabla usuario  
   const { data: userData, error: userError } = await supabase
     .from("usuario")
-    .select(`idusuario, idrol, nombre, apellidos, correo, rol(nombre)`)
+    .select(`idUsuario, idRol, nombre, apellidos, correo, rol(nombre)`)
     .eq("idauth", userId)
     .single();
 

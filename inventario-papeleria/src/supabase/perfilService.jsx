@@ -9,7 +9,7 @@ export async function updatePerfil(idUsuario, formData) {
       cedula: formData.cedula,
       correo: formData.correo,
     })
-    .eq("idusuario", idUsuario);
+    .eq("idUsuario", idUsuario);
 
   if (error) throw error;
 }

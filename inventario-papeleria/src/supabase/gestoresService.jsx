@@ -5,8 +5,8 @@ export async function getGestores() {
   const { data, error } = await supabase
     .from("usuario")
     .select("*")
-    .eq("idrol", 2)
-    .order("idusuario", { ascending: true });
+    .eq("idRol", 2)
+    .order("idUsuario", { ascending: true });
 
   if (error) {
     console.error("Error al obtener gestores:", error.message);
@@ -35,7 +35,7 @@ export async function createGestor({ email, password, nombre, apellidos, cedula 
       apellidos,
       cedula,
       correo: email,
-      idrol: 2, // Gestor
+      idRol: 2, // Gestor
     },
   ]);
 
@@ -49,7 +49,7 @@ export async function updateGestor(id, { nombre, apellidos, cedula, email }) {
   const { error } = await supabase
     .from("usuario")
     .update({ nombre, apellidos, cedula, correo: email })
-    .eq("idusuario", id);
+    .eq("idUsuario", id);
 
   if (error) {
     console.error("Error al actualizar gestor:", error.message);
@@ -62,7 +62,7 @@ export async function deleteGestor(id) {
   const { error } = await supabase
     .from("usuario")
     .delete()
-    .eq("idusuario", id)
+    .eq("idUsuario", id)
     .eq("idrol", 2); // Solo borra si realmente es gestor
 
   if (error) {
