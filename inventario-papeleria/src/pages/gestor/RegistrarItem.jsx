@@ -79,7 +79,7 @@ export default function RegistrarItem() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-slate-50 to-slate-100 p-6">
+    <div className="min-h-screen flex items-center justify-center bg-linear-to-b from-slate-50 to-slate-100 p-6">
       <ToastContainer position="top-right" autoClose={3000} />
 
       <form

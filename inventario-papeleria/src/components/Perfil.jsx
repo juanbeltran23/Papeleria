@@ -20,6 +20,9 @@ export default function Perfil() {
       const data = await getCurrentUser();
       if (data) {
         setUserData(data);
+        setUserData(data);
+        console.log("Perfil cargado:", data);
+
         setForm({
           nombre: data.nombre || "",
           apellidos: data.apellidos || "",
@@ -40,7 +43,7 @@ export default function Perfil() {
     setLoading(true);
 
     try {
-      await updatePerfil(userData.idusuario, form);
+      await updatePerfil(userData.idUsuario, form);
       setUserData({ ...userData, ...form });
       setEditing(false);
       toast.success("✅ Perfil actualizado correctamente", {
@@ -71,7 +74,7 @@ export default function Perfil() {
     <div className="flex justify-center items-center min-h-screen bg-gray-50 dark:bg-gray-900 px-6 py-12">
       <div className="bg-white dark:bg-gray-800 shadow-2xl rounded-2xl w-full max-w-2xl overflow-hidden transition-all duration-300">
         {/* Encabezado del perfil */}
-        <div className="bg-gradient-to-r from-blue-600 to-blue-400 h-36 relative">
+        <div className="bg-linear-to-r from-blue-600 to-blue-400 h-36 relative">
           <div className="absolute -bottom-14 left-1/2 transform -translate-x-1/2">
             <div className="w-28 h-28 rounded-full border-4 border-white dark:border-gray-800 overflow-hidden shadow-lg">
               <img

@@ -11,6 +11,11 @@ import SolicitanteDashboard from "../pages/solicitante/SolicitanteDashboard";
 import Perfil from "../components/Perfil";
 import Layout from "../layouts/MainLayout";
 import ProtectedRoute from "../components/ProtectedRoute";
+import RegistrarEntrada from "../pages/gestor/RegistrarEntrada";
+import Entradas from "../pages/gestor/Entradas";
+import RegistrarSalida from "../pages/gestor/RegistrarSalida";
+import Salidas from "../pages/gestor/Salidas";
+import DetalleSalida from "../pages/gestor/DetalleSalida";
 
 export default function AppRouter() {
   return (
@@ -43,6 +48,12 @@ export default function AppRouter() {
           <Route path="/gestor" element={<Items />} />
           <Route path="/items/:id" element={<DetalleItem />} />
           <Route path="/items/registrar" element={<RegistrarItem />} />
+          <Route path="/gestor/entradas" element={<Entradas />} />
+          <Route path="/gestor/registrar-entrada" element={<RegistrarEntrada />} />
+          <Route path="/gestor/salidas" element={<Salidas />} /> 
+          <Route path="/gestor/registrar-salida" element={<RegistrarSalida />} />
+          <Route path="/gestor/salida/:id" element={<DetalleSalida />} />
+
         </Route>
 
         {/* SOLICITANTE */}

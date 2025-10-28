@@ -1,22 +1,12 @@
-import { supabase } from "./client";
+import { supabase } from "../supabase/client";
+import { uploadImageToBucket } from "./uploadService";
 
-// 🖼️ Subir imagen al bucket
+// 🖼️ Subir imagen al bucket específico de ítems
 export async function uploadItemImage(file) {
-  if (!file) return null;
-  const fileExt = file.name.split(".").pop();
-  const fileName = `${Date.now()}.${fileExt}`;
-  const { data, error } = await supabase.storage
-    .from("items-images")
-    .upload(fileName, file, { cacheControl: "3600", upsert: false });
-  if (error) throw error;
-  const { data: publicData } = supabase.storage
-    .from("items-images")
-    .getPublicUrl(fileName);
-  return publicData.publicUrl;
+  return await uploadImageToBucket(file, "items-images");
 }
 
-
-// 🧱 Crear nuevo item
+// 🧱 Crear nuevo ítem
 export async function createItem(itemData) {
   let imageUrl = null;
 
@@ -76,30 +66,40 @@ export async function createCategoria(nombre) {
   return data;
 }
 
-// Obtener un ítem por ID
+// 🔍 Obtener ítem por ID
 export async function getItemById(id) {
   const { data, error } = await supabase
     .from("item")
     .select("*")
     .eq("idItem", id)
     .single();
+
   if (error) throw error;
   return data;
 }
 
-// Actualizar ítem
+// ✏️ Actualizar ítem
 export async function updateItem(id, itemData) {
+  let imageUrl = itemData.imagen;
+
+  // Si se sube una nueva imagen, reemplázala
+  if (itemData.imagen instanceof File) {
+    imageUrl = await uploadItemImage(itemData.imagen);
+  }
+
   const { error } = await supabase
     .from("item")
-    .update(itemData)
+    .update({
+      ...itemData,
+      imagen: imageUrl,
+    })
     .eq("idItem", id);
+
   if (error) throw error;
 }
 
-// Eliminar ítem
+// 🗑️ Eliminar ítem
 export async function deleteItem(id) {
   const { error } = await supabase.from("item").delete().eq("idItem", id);
   if (error) throw error;
 }
-
-

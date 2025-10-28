@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { getItems, getCategorias } from "../../supabase/itemsService";
 import { useNavigate } from "react-router-dom";
-import { Search, Package, Filter, RefreshCw } from "lucide-react";
-import { ToastContainer, toast } from "react-toastify";
+import { Search, Package, Filter, RefreshCcw, Plus } from "lucide-react";
+import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 export default function Items() {
@@ -87,20 +87,24 @@ export default function Items() {
           {/* Botón actualizar */}
           <button
             onClick={cargarDatos}
-            className="flex items-center justify-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 active:scale-95 transition w-full sm:w-auto"
+            className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-xl shadow hover:bg-blue-700 transition"
           >
-            <RefreshCw size={16} /> Actualizar
+            <RefreshCcw size={16} /> Refrescar
           </button>
 
           {/* Botón añadir material */}
           <button
             onClick={() => navigate("/items/registrar")}
-            className="flex items-center justify-center gap-2 bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 active:scale-95 transition w-full sm:w-auto"
+            className="flex items-center gap-2 bg-green-600 text-white px-4 py-2 rounded-xl shadow hover:bg-green-700 transition"
           >
-            + Añadir material
+            <Plus size={18} />
+            Añadir material
           </button>
         </div>
       </div>
+
+
+
 
 
       {/* 🧱 Grid de ítems */}
@@ -143,8 +147,8 @@ export default function Items() {
                 <div className="flex justify-between items-center">
                   <span
                     className={`px-3 py-1 text-xs rounded-full font-medium ${item.stockReal <= item.stockMinimo
-                        ? "bg-red-100 text-red-700"
-                        : "bg-green-100 text-green-700"
+                      ? "bg-red-100 text-red-700"
+                      : "bg-green-100 text-green-700"
                       }`}
                   >
                     Stock: {item.stockReal}

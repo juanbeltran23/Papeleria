@@ -1,4 +1,3 @@
-// src/layouts/MainLayout.jsx
 import { useState, useEffect } from "react";
 import { useNavigate, Outlet } from "react-router-dom";
 import { logout, getCurrentUser } from "../supabase/auth";
@@ -58,7 +57,7 @@ export default function Layout() {
   const items = menuItems[role] || [];
 
   return (
-    <div className="flex h-screen w-screen overflow-hidden bg-gray-50 dark:bg-gray-900">
+    <div className="flex h-screen w-screen overflow-hidden bg-gray-50">
       {/* Sidebar */}
       <Sidebar
         items={items}
