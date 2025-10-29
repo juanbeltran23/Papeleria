@@ -1,20 +1,13 @@
 import { supabase } from "./client";
 import { getCurrentUser } from "./auth";
-import { uploadImageToBucket } from "./uploadService";
 
 /**
- * Crea una nueva salida con sus ítems, descuenta stock y registra movimientos.
+ * Crea una nueva devolucion con sus ítems, descuenta stock y registra movimientos.
  */
-export async function createSalida({ solicitante, actividad, firma, items }) {
+export async function createDevolucion({ solicitante, observacion, items }) {
   try {
     const user = await getCurrentUser();
     if (!user) throw new Error("No hay usuario autenticado.");
-
-    // Subir firma al bucket
-    let firmaUrl = null;
-    if (firma instanceof File) {
-      firmaUrl = await uploadImageToBucket(firma, "firmas-digitales");
-    }
 
      // obtener la fecha actual en zona horaria "America/Bogota"
     const now = new Date();
@@ -25,26 +18,25 @@ export async function createSalida({ solicitante, actividad, firma, items }) {
       .replace("T", " ")
       .slice(0, 19); // formato "YYYY-MM-DD HH:mm:ss"
 
-    // Insertar salida principal
-    const { data: salida, error: errorSalida } = await supabase
-      .from("salida")
+    // Insertar devolucion principal
+    const { data: devolucion, error: errorDevolucion } = await supabase
+      .from("devolucion")
       .insert([
         {
           idUsuarioSolicitante: solicitante.idUsuario,
           idUsuarioGestor: user.idUsuario,
-          actividad,
-          firma: firmaUrl,
+          observacion,
           fecha: fechaBogota,
         },
       ])
       .select()
       .single();
 
-    if (errorSalida) throw errorSalida;
+    if (errorDevolucion) throw errorDevolucion;
 
     // Procesar ítems
     for (const i of items) {
-      const { idItem, cantidadRequerida, cantidadDespachada } = i;
+      const { idItem, cantidad } = i;
 
       // Obtener ítem actual
       const { data: item, error: errorItem } = await supabase
@@ -54,26 +46,21 @@ export async function createSalida({ solicitante, actividad, firma, items }) {
         .single();
       if (errorItem) throw errorItem;
 
-      if (item.stockReal < cantidadDespachada) {
-        throw new Error(`Stock insuficiente para el ítem "${item.nombre}"`);
-      }
+      const nuevoStock = item.stockReal + cantidad;
 
-      const nuevoStock = item.stockReal - cantidadDespachada;
-
-      // Insertar en salidaItem
-      const { data: salidaItem, error: errorSalidaItem } = await supabase
-        .from("salidaItem")
+      // Insertar en devolucionItem
+      const { data: devolucionItem, error: errordevolucionItem } = await supabase
+        .from("devolucionItem")
         .insert([
           {
-            idSalida: salida.idSalida,
+            idDevolucion: devolucion.idDevolucion,
             idItem,
-            cantidadRequerida,
-            cantidadDespachada,
+            cantidad,
           },
         ])
         .select()
         .single();
-      if (errorSalidaItem) throw errorSalidaItem;
+      if (errordevolucionItem) throw errordevolucionItem;
 
       // Actualizar stock
       const { error: errorStock } = await supabase
@@ -85,33 +72,32 @@ export async function createSalida({ solicitante, actividad, firma, items }) {
       // Registrar movimiento
       const { error: errorMov } = await supabase.from("movimiento").insert([
         {
-          tipo: "salida",
-          referenciaTipo: "salidaItem",
-          idReferencia: salidaItem.idSalidaItem,
+          tipo: "devolucion",
+          referenciaTipo: "devolucionItem",
+          idReferencia: devolucionItem.idDevolucionItem,
           idItem,
-          descripcion: `${solicitante.nombre + " " + solicitante.apellidos} retiró ${cantidadDespachada} unidad(es) del ítem "${item.nombre}`,
+          descripcion: `${solicitante.nombre + " " + solicitante.apellidos} devolvió ${cantidad} unidad(es) del ítem "${item.nombre}"`,
           fecha: new Date(),
         },
       ]);
       if (errorMov) throw errorMov;
     }
 
-    return salida;
+    return devolucion;
   } catch (error) {
-    console.error("❌ Error en createSalida:", error);
+    console.error("❌ Error en createDevolucion:", error);
     throw error;
   }
 }
 
-// Obtener todas las salidas
-export async function getSalidas() {
+// Obtener todas las devoluciones
+export async function getDevoluciones() {
   const { data, error } = await supabase
-    .from("salida")
+    .from("devolucion")
     .select(`
-      idSalida,
+      idDevolucion,
       fecha,
-      actividad,
-      firma,
+      observacion,
       usuarioGestor: idUsuarioGestor (nombre, apellidos),
       usuarioSolicitante: idUsuarioSolicitante (nombre, apellidos)
     `)
@@ -121,18 +107,17 @@ export async function getSalidas() {
   return data;
 }
 
-// Obtener ítems de una salida específica
-export async function getSalidaItemsBySalidaId(idSalida) {
+// Obtener ítems de una devolucion específica
+export async function getDevolucionItemsByDevolucionId(idDevolucion) {
   const { data, error } = await supabase
-    .from("salidaItem")
+    .from("devolucionItem")
     .select(`
-      idSalidaItem,
+      idDevolucionItem,
       idItem,
-      cantidadRequerida,
-      cantidadDespachada,
+      cantidad,
       item (nombre, codigo)
     `)
-    .eq("idSalida", idSalida);
+    .eq("idDevolucion", idDevolucion);
 
   if (error) throw error;
   return data;

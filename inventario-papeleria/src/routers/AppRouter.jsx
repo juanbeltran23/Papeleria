@@ -16,6 +16,9 @@ import Entradas from "../pages/gestor/Entradas";
 import RegistrarSalida from "../pages/gestor/RegistrarSalida";
 import Salidas from "../pages/gestor/Salidas";
 import DetalleSalida from "../pages/gestor/DetalleSalida";
+import RegistrarDevolucion from "../pages/gestor/RegistrarDevolucion";
+import Devoluciones from "../pages/gestor/Devoluciones";
+import DetalleDevolucion from "../pages/gestor/DetalleDevolucion";
 
 export default function AppRouter() {
   return (
@@ -53,6 +56,10 @@ export default function AppRouter() {
           <Route path="/gestor/salidas" element={<Salidas />} /> 
           <Route path="/gestor/registrar-salida" element={<RegistrarSalida />} />
           <Route path="/gestor/salida/:id" element={<DetalleSalida />} />
+          <Route path="/gestor/devoluciones" element={<Devoluciones />} /> 
+          <Route path="/gestor/registrar-devolucion" element={<RegistrarDevolucion />} />
+          <Route path="/gestor/devolucion/:id" element={<DetalleDevolucion/>} />
+          
 
         </Route>
 

@@ -1,6 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import SignatureCanvas from "react-signature-canvas";
-import { createSalida } from "../../supabase/salidasService";
+import { createDevolucion } from "../../supabase/devolucionesService";
 import { getItems } from "../../supabase/itemsService";
 import { supabase } from "../../supabase/client";
 import { toast } from "react-toastify";
@@ -8,23 +7,19 @@ import { useNavigate } from "react-router-dom";
 import {
   ArrowLeft,
   ClipboardList,
-  FileSignature,
   Search,
   CheckCircle2,
   Trash2,
-  RotateCcw,
   User2,
   Package,
 } from "lucide-react";
 
-export default function RegistrarSalida() {
+export default function RegistrarDevolucion() {
   const navigate = useNavigate();
-  const sigCanvas = useRef(null);
 
   const [form, setForm] = useState({
     solicitante: "",
-    actividad: "",
-    firma: null,
+    observacion: "",
     items: [],
   });
 
@@ -92,7 +87,6 @@ export default function RegistrarSalida() {
         {
           idItem: item.idItem,
           nombre: item.nombre,
-          cantidad:0,
         },
       ],
     });
@@ -118,11 +112,6 @@ export default function RegistrarSalida() {
     });
   }
 
-  function limpiarFirma() {
-    sigCanvas.current.clear();
-    setForm({ ...form, firma: null });
-  }
-
   async function handleSubmit(e) {
     e.preventDefault();
 
@@ -130,25 +119,17 @@ export default function RegistrarSalida() {
       return toast.warning("Selecciona un solicitante válido.");
     if (form.items.length === 0)
       return toast.warning("Agrega al menos un ítem.");
-    if (sigCanvas.current.isEmpty())
-      return toast.warning("La firma digital es obligatoria.");
 
     try {
       setLoading(true);
 
-      const canvas = sigCanvas.current.getCanvas();
-      const firmaDataUrl = canvas.toDataURL("image/png");
-      const response = await fetch(firmaDataUrl);
-      const blob = await response.blob();
-      const file = new File([blob], "firma.png", { type: "image/png" });
+      await createDevolucion({ ...form});
 
-      await createSalida({ ...form, firma: file });
-
-      toast.success("✅ Salida registrada correctamente.");
-      navigate("/gestor/salidas");
+      toast.success("✅ Devolución registrada correctamente.");
+      navigate("/gestor/devoluciones");
     } catch (err) {
       console.error("❌ Error en handleSubmit:", err);
-      toast.error(err.message || "Error al registrar la salida.");
+      toast.error(err.message || "Error al registrar la devolución.");
     } finally {
       setLoading(false);
     }
@@ -159,7 +140,7 @@ export default function RegistrarSalida() {
       <div className="w-full max-w-3xl bg-white rounded-2xl shadow-md border border-slate-100 p-8 relative">
         {/* 🔙 Volver */}
         <button
-          onClick={() => navigate("/gestor/salidas")}
+          onClick={() => navigate("/gestor/devoluciones")}
           className="absolute top-4 left-4 text-slate-500 hover:text-blue-600 flex items-center gap-1"
         >
           <ArrowLeft size={18} /> Volver
@@ -167,7 +148,7 @@ export default function RegistrarSalida() {
 
         <br />
         <h2 className="text-2xl font-semibold text-slate-800 mb-6 flex items-center gap-2">
-          <ClipboardList className="text-blue-600" /> Registrar Salida
+          <ClipboardList className="text-blue-600" /> Registrar Devolución
         </h2>
 
         <form onSubmit={handleSubmit} className="space-y-6">
@@ -212,15 +193,15 @@ export default function RegistrarSalida() {
             )}
           </div>
 
-          {/* Actividad */}
+          {/* Observación */}
           <div>
-            <label className="text-sm font-medium text-slate-500">Actividad</label>
+            <label className="text-sm font-medium text-slate-500">Observación</label>
             <input
               type="text"
-              value={form.actividad}
-              onChange={(e) => setForm({ ...form, actividad: e.target.value })}
+              value={form.observacion}
+              onChange={(e) => setForm({ ...form, observacion: e.target.value })}
               className="w-full border border-blue-300 rounded-lg px-3 py-2 mt-1 focus:ring-2 focus:ring-blue-300 outline-none"
-              placeholder="Ej: mantenimiento, instalación, préstamo..."
+              placeholder="Ej: La devolición tiene..."
             />
           </div>
 
@@ -260,9 +241,8 @@ export default function RegistrarSalida() {
             <div className="border rounded-lg p-3 bg-slate-50">
               <div className="hidden sm:grid sm:grid-cols-4 font-semibold text-sm text-slate-600 pb-2 border-b">
                 <span>Ítem</span>
-                <span className="text-center">Cant. requerida</span>
-                <span className="text-center">Cant. despachada</span>
-                <span className="text-center">Acciones</span>
+                <span className="text-center">Cantidad</span>
+                <span className="text-center">Eliminar</span>
               </div>
               {form.items.map((i) => (
                 <div
@@ -272,26 +252,13 @@ export default function RegistrarSalida() {
                   <span className="font-medium text-slate-800">{i.nombre}</span>
 
                   <div className="sm:text-center">
-                    <label className="sm:hidden text-xs text-slate-500">Requerida</label>
+                    <label className="sm:hidden text-xs text-slate-500">Cantidad</label>
                     <input
                       type="number"
                       min="0"
-                      value={i.cantidadRequerida}
+                      value={i.cantidad}
                       onChange={(e) =>
-                        actualizarCampo(i.idItem, "cantidadRequerida", e.target.value)
-                      }
-                      className="w-full sm:w-20 border border-blue-300 rounded-lg px-2 py-1 text-center"
-                    />
-                  </div>
-
-                  <div className="sm:text-center">
-                    <label className="sm:hidden text-xs text-slate-500">Despachada</label>
-                    <input
-                      type="number"
-                      min="0"
-                      value={i.cantidadDespachada}
-                      onChange={(e) =>
-                        actualizarCampo(i.idItem, "cantidadDespachada", e.target.value)
+                        actualizarCampo(i.idItem, "cantidad", e.target.value)
                       }
                       className="w-full sm:w-20 border border-blue-300 rounded-lg px-2 py-1 text-center"
                     />
@@ -309,31 +276,6 @@ export default function RegistrarSalida() {
             </div>
           )}
 
-          {/* Firma digital */}
-          <div>
-            <label className="text-sm font-medium text-slate-500 flex items-center gap-2 mb-2">
-              <FileSignature className="text-blue-600" /> Firma del solicitante
-            </label>
-
-            <div className="border border-blue-300 rounded-lg bg-slate-50 relative">
-              <SignatureCanvas
-                ref={sigCanvas}
-                penColor="black"
-                canvasProps={{ className: "w-full h-48 rounded-lg bg-white" }}
-              />
-              <button
-                type="button"
-                onClick={limpiarFirma}
-                className="absolute top-2 right-2 bg-white border border-slate-300 rounded-md p-1 text-slate-600 hover:bg-slate-100"
-              >
-                <RotateCcw size={16} />
-              </button>
-            </div>
-            <p className="text-xs text-slate-500 mt-1">
-              Firma directamente con el dedo o mouse.
-            </p>
-          </div>
-
           {/* Botón */}
           <button
             type="submit"
@@ -341,10 +283,12 @@ export default function RegistrarSalida() {
             className="flex items-center justify-center gap-2 w-full bg-green-600 text-white py-3 rounded-lg hover:bg-green-700 transition disabled:opacity-50"
           >
             <CheckCircle2 size={20} />
-            {loading ? "Registrando..." : "Registrar Salida"}
+            {loading ? "Registrando..." : "Registrar Devolución"}
           </button>
         </form>
       </div>
     </div>
   );
 }
+
+

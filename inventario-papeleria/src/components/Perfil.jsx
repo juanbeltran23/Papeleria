@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { getCurrentUser } from "../supabase/auth";
-import { updatePerfil } from "../supabase/perfilService";
+import { updateUsuario } from "../supabase/usuarioService";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -43,7 +43,7 @@ export default function Perfil() {
     setLoading(true);
 
     try {
-      await updatePerfil(userData.idUsuario, form);
+      await updateUsuario(userData.idUsuario, form);
       setUserData({ ...userData, ...form });
       setEditing(false);
       toast.success("✅ Perfil actualizado correctamente", {

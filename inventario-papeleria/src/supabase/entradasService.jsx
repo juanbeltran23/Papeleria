@@ -38,7 +38,7 @@ export async function createEntrada({ idItem, cantidad, factura, observacion }) 
 
     if (errorEntrada) throw errorEntrada;
 
-    // 2️⃣ Obtener el stock actual del ítem
+    // Obtener el stock actual del ítem
     const { data: item, error: errorItem } = await supabase
       .from("item")
       .select("stockReal")
@@ -49,7 +49,7 @@ export async function createEntrada({ idItem, cantidad, factura, observacion }) 
 
     const nuevoStock = item.stockReal + parseInt(cantidad);
 
-    // 3️⃣ Actualizar el stock del ítem
+    // Actualizar el stock del ítem
     const { error: errorUpdate } = await supabase
       .from("item")
       .update({ stockReal: nuevoStock })
@@ -57,13 +57,14 @@ export async function createEntrada({ idItem, cantidad, factura, observacion }) 
 
     if (errorUpdate) throw errorUpdate;
 
-    // 4️⃣ Registrar movimiento tipo "entrada"
+    // Registrar movimiento tipo "entrada"
     const { error: errorMov } = await supabase.from("movimiento").insert([
       {
         tipo: "entrada",
         referenciaTipo: "entrada",
         idItem,
         idReferencia: entrada.idEntrada,
+        descripcion: `El gestor ${user.nombre} registró una entrada de ${cantidad} unidad(es).`,
         fecha: new Date(),
       },
     ]);

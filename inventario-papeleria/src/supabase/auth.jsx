@@ -1,4 +1,3 @@
-// src/supabase/auth.jsx
 import { supabase } from "./client.jsx";
 
 /**
