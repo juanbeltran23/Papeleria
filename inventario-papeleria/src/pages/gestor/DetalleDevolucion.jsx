@@ -90,7 +90,7 @@ export default function DetalleDevolucion() {
 
             {/* Versión móvil: bloques apilados */}
             <div className="sm:hidden space-y-3">
-              {devolucion.map((i) => (
+              {devolucionItems.map((i) => (
                 <div
                   key={i.idDevolucionItem}
                   className="p-3 bg-white rounded-lg shadow-sm border border-slate-200"
