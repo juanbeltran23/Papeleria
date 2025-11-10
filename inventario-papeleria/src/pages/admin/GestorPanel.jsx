@@ -4,7 +4,7 @@ import {
   getGestores,
   updateGestor,
   deleteGestor,
-} from "../../supabase/gestoresService";
+} from "../../services/gestoresService";
 import { toast } from "react-toastify";
 import GestorForm from "../../components/admin/GestorForm";
 import GestorTable from "../../components/admin/GestorTable";
@@ -36,14 +36,11 @@ export default function GestorPanel() {
   }
 
   const handleEdit = (gestor) => {
-    setEditingId(gestor.idusuario);
+    setEditingId(gestor.idUsuario);
     setForm({
       nombre: gestor.nombre,
       apellidos: gestor.apellidos,
       cedula: gestor.cedula,
-      email: gestor.correo,
-      password: "",
-      password2: "",
     });
     toast("Editando gestor...");
   };
@@ -67,7 +64,7 @@ export default function GestorPanel() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (form.password !== form.password2) {
+    if (!editingId && form.password !== form.password2) {
       toast.error("Las contraseñas no coinciden");
       return;
     }

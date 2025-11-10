@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { registerSolicitante } from "../supabase/auth";
+import { registerSolicitante } from "../services/auth";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 

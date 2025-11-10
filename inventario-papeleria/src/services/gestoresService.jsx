@@ -1,4 +1,4 @@
-import { supabase } from "./client";
+import { supabase } from "../supabase/client";
 
 //Obtener todos los gestores (rol = 2)
 export async function getGestores() {
@@ -45,10 +45,10 @@ export async function createGestor({ email, password, nombre, apellidos, cedula 
 }
 
 //Actualizar los datos de un gestor
-export async function updateGestor(id, { nombre, apellidos, cedula, email }) {
+export async function updateGestor(id, { nombre, apellidos, cedula}) {
   const { error } = await supabase
     .from("usuario")
-    .update({ nombre, apellidos, cedula, correo: email })
+    .update({ nombre, apellidos, cedula})
     .eq("idUsuario", id);
 
   if (error) {

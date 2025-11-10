@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { getDevoluciones } from "../../supabase/devolucionesService";
+import { getDevoluciones } from "../../services/devolucionesService";
 import { toast } from "react-toastify";
 import { ClipboardList, Search, RefreshCcw, Plus } from "lucide-react";
 

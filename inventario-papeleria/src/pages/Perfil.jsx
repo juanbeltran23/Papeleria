@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { getCurrentUser } from "../supabase/auth";
-import { updateUsuario } from "../supabase/usuarioService";
+import { getCurrentUser } from "../services/auth";
+import { updateUsuario } from "../services/usuarioService";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 

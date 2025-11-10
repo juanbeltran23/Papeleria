@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate, Outlet } from "react-router-dom";
-import { logout, getCurrentUser } from "../supabase/auth";
+import { logout, getCurrentUser } from "../services/auth";
 import Sidebar from "../components/Sidebar";
 import Navbar from "../components/Navbar";
 

@@ -1,4 +1,4 @@
-import { supabase } from "./client";
+import { supabase } from "../supabase/client";
 
 export async function updateUsuario(idUsuario, formData) {
   const { error } = await supabase

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { createEntrada } from "../../supabase/entradasService";
-import { getItems } from "../../supabase/itemsService";
+import { createEntrada } from "../../services/entradasService";
+import { getItems } from "../../services/itemsService";
 import { supabase } from "../../supabase/client";
 import { toast } from "react-toastify";
 import {

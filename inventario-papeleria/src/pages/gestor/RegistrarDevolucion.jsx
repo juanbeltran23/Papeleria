@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
-import { createDevolucion } from "../../supabase/devolucionesService";
-import { getItems } from "../../supabase/itemsService";
+import { createDevolucion } from "../../services/devolucionesService";
+import { getItems } from "../../services/itemsService";
 import { supabase } from "../../supabase/client";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";

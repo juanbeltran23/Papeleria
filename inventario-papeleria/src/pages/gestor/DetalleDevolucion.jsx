@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { supabase } from "../../supabase/client";
-import { getDevolucionItemsByDevolucionId } from "../../supabase/devolucionesService";
+import { getDevolucionItemsByDevolucionId } from "../../services/devolucionesService";
 import { toast } from "react-toastify";
 import { ArrowLeft, ClipboardList } from "lucide-react";
 

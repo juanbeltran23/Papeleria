@@ -6,7 +6,7 @@ import {
   deleteItem,
   getCategorias,
   uploadItemImage,
-} from "../../supabase/itemsService";
+} from "../../services/itemsService";
 import {
   Package,
   Trash2,

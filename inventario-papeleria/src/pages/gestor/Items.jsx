@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { getItems, getCategorias } from "../../supabase/itemsService";
+import { getItems, getCategorias } from "../../services/itemsService";
 import { useNavigate } from "react-router-dom";
 import { Search, Package, Filter, RefreshCcw, Plus } from "lucide-react";
 import { toast } from "react-toastify";
@@ -33,7 +33,7 @@ export default function Items() {
     }
   }
 
-  // 🔍 Filtro de búsqueda y categoría
+  // Filtro de búsqueda y categoría
   const itemsFiltrados = items.filter((item) => {
     const coincideCategoria =
       !filtroCategoria || item.idCategoria === parseInt(filtroCategoria);
@@ -46,7 +46,7 @@ export default function Items() {
   return (
     <div className="min-h-screen bg-slate-50 p-6">
 
-      {/* 🔹 Encabezado */}
+      {/* Encabezado */}
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between mb-8">
         {/* Título */}
         <h1 className="text-3xl font-semibold text-slate-800 flex items-center gap-2">
@@ -83,23 +83,25 @@ export default function Items() {
               ))}
             </select>
           </div>
+          <div className="flex flex-wrap items-center gap-3">
+            {/* Botón actualizar */}
+            <button
+              onClick={cargarDatos}
+              className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-xl shadow hover:bg-blue-700 transition"
+            >
+              <RefreshCcw size={16} /> Refrescar
+            </button>
 
-          {/* Botón actualizar */}
-          <button
-            onClick={cargarDatos}
-            className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-xl shadow hover:bg-blue-700 transition"
-          >
-            <RefreshCcw size={16} /> Refrescar
-          </button>
+            {/* Botón añadir material */}
+            <button
+              onClick={() => navigate("/items/registrar")}
+              className="flex items-center gap-2 bg-green-600 text-white px-4 py-2 rounded-xl shadow hover:bg-green-700 transition"
+            >
+              <Plus size={18} />
+              Añadir material
+            </button>
 
-          {/* Botón añadir material */}
-          <button
-            onClick={() => navigate("/items/registrar")}
-            className="flex items-center gap-2 bg-green-600 text-white px-4 py-2 rounded-xl shadow hover:bg-green-700 transition"
-          >
-            <Plus size={18} />
-            Añadir material
-          </button>
+          </div>
         </div>
       </div>
 

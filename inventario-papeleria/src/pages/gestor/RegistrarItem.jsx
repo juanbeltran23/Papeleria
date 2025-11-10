@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { createItem, getCategorias, createCategoria } from "../../supabase/itemsService";
+import { createItem, getCategorias, createCategoria } from "../../services/itemsService";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 

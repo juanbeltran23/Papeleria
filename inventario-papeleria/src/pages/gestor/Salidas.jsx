@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { getSalidas } from "../../supabase/salidasService";
+import { getSalidas } from "../../services/salidasService";
 import { toast } from "react-toastify";
 import { ClipboardList, Search, RefreshCcw, Plus } from "lucide-react";
 

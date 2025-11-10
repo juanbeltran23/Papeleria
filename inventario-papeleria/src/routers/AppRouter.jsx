@@ -8,7 +8,7 @@ import Items from "../pages/gestor/Items";
 import RegistrarItem from "../pages/gestor/RegistrarItem";
 import DetalleItem from "../pages/gestor/DetalleItem"; // Asegúrate de importar esto si lo usas
 import SolicitanteDashboard from "../pages/solicitante/SolicitanteDashboard";
-import Perfil from "../components/Perfil";
+import Perfil from "../pages/Perfil";
 import Layout from "../layouts/MainLayout";
 import ProtectedRoute from "../components/ProtectedRoute";
 import RegistrarEntrada from "../pages/gestor/RegistrarEntrada";
@@ -19,6 +19,7 @@ import DetalleSalida from "../pages/gestor/DetalleSalida";
 import RegistrarDevolucion from "../pages/gestor/RegistrarDevolucion";
 import Devoluciones from "../pages/gestor/Devoluciones";
 import DetalleDevolucion from "../pages/gestor/DetalleDevolucion";
+import Inventario from "../pages/gestor/Inventario";
 
 export default function AppRouter() {
   return (
@@ -59,6 +60,7 @@ export default function AppRouter() {
           <Route path="/gestor/devoluciones" element={<Devoluciones />} /> 
           <Route path="/gestor/registrar-devolucion" element={<RegistrarDevolucion />} />
           <Route path="/gestor/devolucion/:id" element={<DetalleDevolucion/>} />
+          <Route path="/gestor/inventario" element={<Inventario/>} />
           
 
         </Route>

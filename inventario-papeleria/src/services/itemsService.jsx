@@ -1,12 +1,13 @@
 import { supabase } from "../supabase/client";
 import { uploadImageToBucket } from "./uploadService";
+import { getCurrentUser } from "./auth";
 
 // 🖼️ Subir imagen al bucket específico de ítems
 export async function uploadItemImage(file) {
   return await uploadImageToBucket(file, "items-images");
 }
 
-// 🧱 Crear nuevo ítem
+// Crear nuevo ítem
 export async function createItem(itemData) {
   let imageUrl = null;
 
@@ -32,7 +33,7 @@ export async function createItem(itemData) {
   if (error) throw error;
 }
 
-// 📦 Obtener lista de ítems
+// Obtener lista de ítems
 export async function getItems() {
   const { data, error } = await supabase
     .from("item")
@@ -43,7 +44,7 @@ export async function getItems() {
   return data;
 }
 
-// 📂 Obtener categorías
+// Obtener categorías
 export async function getCategorias() {
   const { data, error } = await supabase
     .from("categoria")
@@ -54,7 +55,7 @@ export async function getCategorias() {
   return data;
 }
 
-// ➕ Crear nueva categoría
+// Crear nueva categoría
 export async function createCategoria(nombre) {
   const { data, error } = await supabase
     .from("categoria")
@@ -66,7 +67,7 @@ export async function createCategoria(nombre) {
   return data;
 }
 
-// 🔍 Obtener ítem por ID
+// Obtener ítem por ID
 export async function getItemById(id) {
   const { data, error } = await supabase
     .from("item")
@@ -78,16 +79,25 @@ export async function getItemById(id) {
   return data;
 }
 
-// ✏️ Actualizar ítem
-export async function updateItem(id, itemData) {
+// Actualizar ítem con trazabilidad de stockReal
+export async function updateItem(id, itemData, motivoAjuste) {
   let imageUrl = itemData.imagen;
+
+  // Obtener el ítem actual para comparar stockReal
+  const { data: currentItem, error: fetchError } = await supabase
+    .from("item")
+    .select("stockReal")
+    .eq("idItem", id)
+    .single();
+
+  if (fetchError) throw fetchError;
 
   // Si se sube una nueva imagen, reemplázala
   if (itemData.imagen instanceof File) {
     imageUrl = await uploadItemImage(itemData.imagen);
   }
 
-  const { error } = await supabase
+  const { error: updateError } = await supabase
     .from("item")
     .update({
       ...itemData,
@@ -95,10 +105,35 @@ export async function updateItem(id, itemData) {
     })
     .eq("idItem", id);
 
-  if (error) throw error;
+  if (updateError) throw updateError;
+
+  // Si el stockReal cambió, registrar ajuste
+  
+  const user = await getCurrentUser();
+  if (!user) throw new Error("No hay usuario autenticado.");
+    
+  if (
+    typeof itemData.stockReal === "number" &&
+    itemData.stockReal !== currentItem.stockReal
+  ) {
+    const cantidadAjustada = itemData.stockReal - currentItem.stockReal;
+
+    const { error: ajusteError } = await supabase.from("ajuste").insert([
+      {
+        idItem: id,
+        idUsuarioGestor: user.idUsuario,
+        tipo: "ajuste manual",
+        cantidad: cantidadAjustada,
+        motivo: motivoAjuste,
+        fecha: new Date().toISOString(),
+      },
+    ]);
+
+    if (ajusteError) throw ajusteError;
+  }
 }
 
-// 🗑️ Eliminar ítem
+// Eliminar ítem
 export async function deleteItem(id) {
   const { error } = await supabase.from("item").delete().eq("idItem", id);
   if (error) throw error;

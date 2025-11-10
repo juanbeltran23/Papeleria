@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { getEntradas } from "../../supabase/entradasService";
+import { getEntradas } from "../../services/entradasService";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { Upload, Search, RefreshCcw, Plus } from "lucide-react";

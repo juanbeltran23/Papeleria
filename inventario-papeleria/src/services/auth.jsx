@@ -1,4 +1,4 @@
-import { supabase } from "./client.jsx";
+import { supabase } from "../supabase/client.jsx";
 
 /**
  * REGISTRO DE USUARIOS (AUTORREGISTRO)
