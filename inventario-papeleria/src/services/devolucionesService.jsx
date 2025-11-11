@@ -76,8 +76,9 @@ export async function createDevolucion({ solicitante, observacion, items }) {
           referenciaTipo: "devolucionItem",
           idReferencia: devolucionItem.idDevolucionItem,
           idItem,
-          descripcion: `${solicitante.nombre + " " + solicitante.apellidos} devolvió ${cantidad} unidad(es) del ítem "${item.nombre}"`,
+          descripcion: `El solicitante ${solicitante.nombre + " " + solicitante.apellidos} devolvió ${cantidad} unidad(es) del ítem "${item.nombre}"`,
           fecha: new Date(),
+          cantidad,
         },
       ]);
       if (errorMov) throw errorMov;

@@ -20,6 +20,7 @@ import RegistrarDevolucion from "../pages/gestor/RegistrarDevolucion";
 import Devoluciones from "../pages/gestor/Devoluciones";
 import DetalleDevolucion from "../pages/gestor/DetalleDevolucion";
 import Inventario from "../pages/gestor/Inventario";
+import TodosMovimientos from "../pages/admin/TodosMovimientos";
 
 export default function AppRouter() {
   return (
@@ -39,6 +40,7 @@ export default function AppRouter() {
         >
           <Route path="/admin" element={<AdminDashboard />} />
           <Route path="/admin/gestores" element={<GestorPanel />} />
+          <Route path="/admin/movimientos" element={<TodosMovimientos />} />
         </Route>
 
         {/* GESTOR */}

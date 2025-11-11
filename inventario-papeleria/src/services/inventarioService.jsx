@@ -55,7 +55,7 @@ export async function addInventarioDetalle({ idInventario, idItem, stockContado 
 
   if (diferencia !== 0) {
     // registrar ajuste
-    const { error: ajusteError } = await supabase.from("ajuste").insert([
+    const { data: ajuste, error: ajusteError } = await supabase.from("ajuste").insert([
       {
         idItem,
         idUsuarioGestor,
@@ -64,9 +64,25 @@ export async function addInventarioDetalle({ idInventario, idItem, stockContado 
         motivo: "Diferencia detectada en conteo físico",
         fecha: fechaBogota,
       },
-    ]);
+    ])
+    .select()
+    .single();
 
     if (ajusteError) throw ajusteError;
+    
+        // Registrar movimiento
+    const { error: errorMov } = await supabase.from("movimiento").insert([
+      {
+        tipo: "ajuste inventario",
+        referenciaTipo: "ajuste",
+        idReferencia: ajuste.idAjuste,
+        idItem,
+        descripcion: `Gestor ${user.nombre} ajusto por inventario el item ${item.nombre}`,
+        fecha: new Date().toISOString(),
+        cantidad: diferencia,
+      },
+    ]);
+    if (errorMov) throw errorMov;
 
     // actualizar stock real
     const { error: updateError } = await supabase

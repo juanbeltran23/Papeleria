@@ -37,7 +37,7 @@ export default function Layout() {
       { name: "Gestores", path: "/admin/gestores" },
       { name: "Aprobar Solicitudes", path: "/admin/solicitudes" },
       { name: "Reportes", path: "/admin/reportes" },
-      { name: "Trazabilidad", path: "/admin/bitacora" },
+      { name: "Trazabilidad", path: "/admin/movimientos" },
     ],
     2: [
       { name: "Materiales", path: "/gestor" },

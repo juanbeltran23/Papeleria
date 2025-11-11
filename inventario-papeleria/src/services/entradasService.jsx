@@ -66,6 +66,7 @@ export async function createEntrada({ idItem, cantidad, factura, observacion }) 
         idReferencia: entrada.idEntrada,
         descripcion: `El gestor ${user.nombre} registró una entrada de ${cantidad} unidad(es).`,
         fecha: new Date(),
+        cantidad,
       },
     ]);
 

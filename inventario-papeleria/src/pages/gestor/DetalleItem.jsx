@@ -87,7 +87,7 @@ export default function DetalleItem() {
       setMotivoAjuste("");
       setStockOriginal(updatedData.stockReal);
     } catch (err) {
-      toast.error("Error al actualizar el ítem.");
+      toast.error(err);
     } finally {
       setLoading(false);
     }

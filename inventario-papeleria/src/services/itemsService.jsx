@@ -118,18 +118,36 @@ export async function updateItem(id, itemData, motivoAjuste) {
   ) {
     const cantidadAjustada = itemData.stockReal - currentItem.stockReal;
 
-    const { error: ajusteError } = await supabase.from("ajuste").insert([
-      {
-        idItem: id,
-        idUsuarioGestor: user.idUsuario,
-        tipo: "ajuste manual",
-        cantidad: cantidadAjustada,
-        motivo: motivoAjuste,
-        fecha: new Date().toISOString(),
-      },
-    ]);
+    const { data: ajuste, error: ajusteError } = await supabase
+      .from("ajuste")
+      .insert([
+        {
+          idItem: id,
+          idUsuarioGestor: user.idUsuario,
+          tipo: "ajuste manual",
+          cantidad: cantidadAjustada,
+          motivo: motivoAjuste,
+          fecha: new Date().toISOString(),
+        },
+      ])
+      .select()
+      .single();
 
     if (ajusteError) throw ajusteError;
+
+    // Registrar movimiento
+    const { error: errorMov } = await supabase.from("movimiento").insert([
+      {
+        tipo: "ajuste manual",
+        referenciaTipo: "ajuste",
+        idReferencia: ajuste.idAjuste,
+        idItem: id,
+        descripcion: `Gestor ${user.nombre} ajusto manualmente el item ${itemData.nombre}`,
+        fecha: new Date().toISOString(),
+        cantidad: cantidadAjustada,
+      },
+    ]);
+    if (errorMov) throw errorMov;
   }
 }
 

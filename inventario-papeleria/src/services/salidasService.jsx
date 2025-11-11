@@ -91,6 +91,7 @@ export async function createSalida({ solicitante, actividad, firma, items }) {
           idItem,
           descripcion: `${solicitante.nombre + " " + solicitante.apellidos} retiró ${cantidadDespachada} unidad(es) del ítem "${item.nombre}`,
           fecha: new Date(),
+          cantidad: cantidadDespachada,
         },
       ]);
       if (errorMov) throw errorMov;
