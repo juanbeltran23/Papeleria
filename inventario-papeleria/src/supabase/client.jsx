@@ -1,7 +1,7 @@
 // src/supabase/client.jsx
 import { createClient } from "@supabase/supabase-js";
 
-// 🚨 Asegúrate de tener tu archivo .env configurado correctamente
+// Asegúrate de tener tu archivo .env configurado correctamente
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 

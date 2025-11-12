@@ -49,8 +49,8 @@ export default function Layout() {
       { name: "Reportes", path: "/gestor/reportes" },
     ],
     3: [
-      { name: "Solicitar Material", path: "/solicitante/solicitud" },
-      { name: "Historial de Solicitudes", path: "/solicitante/historial" },
+      { name: "Solicitar Material", path: "/solicitante/registrar-solicitud" },
+      { name: "Historial de Solicitudes", path: "/solicitante/historial-solicitudes" },
     ],
   };
 

@@ -23,3 +23,13 @@ export async function getSolicitantes() {
   if (error) throw error;
   return data;
 }
+
+export async function getGestores() {
+  const { data, error } = await supabase
+    .from("usuario")
+    .select("idUsuario, nombre, apellidos")
+    .eq("idRol", 2);
+
+  if (error) throw error;
+  return data;
+}

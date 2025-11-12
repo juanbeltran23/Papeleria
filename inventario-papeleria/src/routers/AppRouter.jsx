@@ -20,6 +20,9 @@ import Devoluciones from "../pages/gestor/Devoluciones";
 import DetalleDevolucion from "../pages/gestor/DetalleDevolucion";
 import Inventario from "../pages/gestor/Inventario";
 import Trazabilidad from "../pages/admin/Trazabilidad";
+import CrearSolicitud from "../pages/solicitante/CrearSolicitud";
+import SolicitudesPanel from "../pages/admin/SolicitudesPanel";
+import HistorialSolicitudes from "../pages/solicitante/HistorialSolicitudes";
 
 export default function AppRouter() {
   return (
@@ -43,6 +46,7 @@ export default function AppRouter() {
           {/* Detalles admin */}
           <Route path="/admin/salida/:id" element={<DetalleSalida rol="admin" />} />
           <Route path="/admin/devolucion/:id" element={<DetalleDevolucion rol="admin" />} />
+          <Route path="/admin/solicitudes" element={<SolicitudesPanel tab="solicitudes" />} />
         </Route>
 
         {/* GESTOR */}
@@ -76,6 +80,8 @@ export default function AppRouter() {
           }
         >
           <Route path="/solicitante" element={<SolicitanteDashboard />} />
+          <Route path="/solicitante/registrar-solicitud" element={<CrearSolicitud />} />
+          <Route path="/solicitante/historial-solicitudes" element={<HistorialSolicitudes />} />
         </Route>
 
         {/* PERFIL (común a todos) */}
