@@ -106,10 +106,7 @@ export default function Items() {
       </div>
 
 
-
-
-
-      {/* 🧱 Grid de ítems */}
+      {/* Grid de ítems */}
       {loading ? (
         <div className="text-center text-slate-500 py-20">Cargando ítems...</div>
       ) : itemsFiltrados.length === 0 ? (

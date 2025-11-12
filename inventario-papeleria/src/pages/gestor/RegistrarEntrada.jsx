@@ -86,11 +86,7 @@ export default function RegistrarEntrada() {
       });
 
       toast.success("✅ Entrada registrada correctamente.");
-
-      // Limpiar formulario
-      setForm({ idItem: "", cantidad: "", factura: "", observacion: "" });
-      setQuery("");
-      setFilteredItems([]);
+      navigate("/gestor/entradas")
     } catch (err) {
       console.error(err);
       toast.error("❌ Error al registrar la entrada.");
@@ -102,9 +98,9 @@ export default function RegistrarEntrada() {
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col items-center p-6">
       <div className="w-full max-w-2xl bg-white rounded-2xl shadow-md border border-slate-100 p-8 relative">
-        {/* 🔙 Botón volver */}
+        {/* Botón volver */}
         <button
-          onClick={() => navigate("/gestor")}
+          onClick={() => navigate("/gestor/entradas")}
           className="absolute top-4 left-4 text-slate-500 hover:text-blue-600 flex items-center gap-1"
         >
           <ArrowLeft size={18} /> Volver

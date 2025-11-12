@@ -1,4 +1,3 @@
-// src/routers/AppRouter.jsx
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Login from "../pages/Login";
 import Register from "../pages/Register";
@@ -6,7 +5,7 @@ import AdminDashboard from "../pages/admin/AdminDashboard";
 import GestorPanel from "../pages/admin/GestorPanel";
 import Items from "../pages/gestor/Items";
 import RegistrarItem from "../pages/gestor/RegistrarItem";
-import DetalleItem from "../pages/gestor/DetalleItem"; // Asegúrate de importar esto si lo usas
+import DetalleItem from "../pages/gestor/DetalleItem";
 import SolicitanteDashboard from "../pages/solicitante/SolicitanteDashboard";
 import Perfil from "../pages/Perfil";
 import Layout from "../layouts/MainLayout";
@@ -20,7 +19,7 @@ import RegistrarDevolucion from "../pages/gestor/RegistrarDevolucion";
 import Devoluciones from "../pages/gestor/Devoluciones";
 import DetalleDevolucion from "../pages/gestor/DetalleDevolucion";
 import Inventario from "../pages/gestor/Inventario";
-import TodosMovimientos from "../pages/admin/TodosMovimientos";
+import Trazabilidad from "../pages/admin/Trazabilidad";
 
 export default function AppRouter() {
   return (
@@ -40,7 +39,10 @@ export default function AppRouter() {
         >
           <Route path="/admin" element={<AdminDashboard />} />
           <Route path="/admin/gestores" element={<GestorPanel />} />
-          <Route path="/admin/movimientos" element={<TodosMovimientos />} />
+          <Route path="/admin/movimientos" element={<Trazabilidad />} />
+          {/* Detalles admin */}
+          <Route path="/admin/salida/:id" element={<DetalleSalida rol="admin" />} />
+          <Route path="/admin/devolucion/:id" element={<DetalleDevolucion rol="admin" />} />
         </Route>
 
         {/* GESTOR */}
@@ -58,13 +60,11 @@ export default function AppRouter() {
           <Route path="/gestor/registrar-entrada" element={<RegistrarEntrada />} />
           <Route path="/gestor/salidas" element={<Salidas />} /> 
           <Route path="/gestor/registrar-salida" element={<RegistrarSalida />} />
-          <Route path="/gestor/salida/:id" element={<DetalleSalida />} />
+          <Route path="/gestor/salida/:id" element={<DetalleSalida rol="gestor" />} />
           <Route path="/gestor/devoluciones" element={<Devoluciones />} /> 
           <Route path="/gestor/registrar-devolucion" element={<RegistrarDevolucion />} />
-          <Route path="/gestor/devolucion/:id" element={<DetalleDevolucion/>} />
-          <Route path="/gestor/inventario" element={<Inventario/>} />
-          
-
+          <Route path="/gestor/devolucion/:id" element={<DetalleDevolucion rol="gestor" />} />
+          <Route path="/gestor/inventario" element={<Inventario />} />
         </Route>
 
         {/* SOLICITANTE */}

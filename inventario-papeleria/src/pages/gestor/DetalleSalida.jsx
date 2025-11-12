@@ -5,7 +5,7 @@ import { getSalidaItemsBySalidaId } from "../../services/salidasService";
 import { toast } from "react-toastify";
 import { ArrowLeft, ClipboardList } from "lucide-react";
 
-export default function DetalleSalida() {
+export default function DetalleSalida({ rol = "gestor" }) {
   const { id } = useParams();
   const navigate = useNavigate();
   const [salida, setSalida] = useState(null);
@@ -60,12 +60,15 @@ export default function DetalleSalida() {
       </p>
     );
 
+  // Ruta de regreso según rol
+  const rutaVolver = rol === "admin" ? "/admin/movimientos" : "/gestor/salidas";
+
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col items-center p-4 sm:p-6">
       <div className="w-full max-w-3xl bg-white rounded-2xl shadow-md border border-slate-100 p-6 sm:p-8 relative">
         {/* Botón volver */}
         <button
-          onClick={() => navigate("/gestor/salidas")}
+          onClick={() => navigate(rutaVolver)}
           className="absolute top-4 left-4 text-slate-500 hover:text-blue-600 flex items-center gap-1 text-sm sm:text-base"
         >
           <ArrowLeft size={18} /> Volver
