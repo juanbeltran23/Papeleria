@@ -76,6 +76,7 @@ export default function DetalleItem() {
         stockMinimo: form.stockMinimo,
         stockReal: parseInt(form.stockReal),
         imagen: nuevaUrl,
+        ubicacion: form.ubicacion,
       };
 
       await updateItem(id, updatedData, motivoAjuste);
@@ -254,6 +255,13 @@ export default function DetalleItem() {
                 }
               />
             </div>
+
+            <InputField
+              label="Ubicación"
+              value={form.ubicacion}
+              disabled={!editando}
+              onChange={(e) => setForm({ ...form, ubicacion: e.target.value })}
+            />
 
             {/* Campo condicional para motivo de ajuste */}
             {editando && form.stockReal !== stockOriginal && (

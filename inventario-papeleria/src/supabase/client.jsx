@@ -1,4 +1,3 @@
-// src/supabase/client.jsx
 import { createClient } from "@supabase/supabase-js";
 
 // Asegúrate de tener tu archivo .env configurado correctamente

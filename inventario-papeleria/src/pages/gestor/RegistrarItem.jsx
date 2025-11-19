@@ -70,6 +70,7 @@ export default function RegistrarItem() {
         stockMinimo: "",
         inventarioInicial: "",
         imagen: null,
+        ubicacion: "",
       });
     } catch {
       toast.error("Error al registrar el ítem.");

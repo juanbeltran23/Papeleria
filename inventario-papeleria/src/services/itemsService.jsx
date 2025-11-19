@@ -27,6 +27,7 @@ export async function createItem(itemData) {
       stockReal: itemData.inventarioInicial,
       imagen: imageUrl,
       qr: null,
+      ubicacion: itemData.ubicacion,
     },
   ]);
 
