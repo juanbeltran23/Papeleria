@@ -38,6 +38,7 @@ export default function Layout() {
       { name: "Aprobar Solicitudes", path: "/admin/solicitudes" },
       { name: "Reportes", path: "/admin/reportes" },
       { name: "Trazabilidad", path: "/admin/movimientos" },
+      { name: "Alertas", path: "/alertas" },
     ],
     2: [
       { name: "Materiales", path: "/gestor" },
@@ -45,7 +46,7 @@ export default function Layout() {
       { name: "Salidas", path: "/gestor/salidas" },
       { name: "Devoluciones", path: "/gestor/devoluciones" },
       { name: "Inventario Físico", path: "/gestor/inventario" },
-      { name: "Alertas", path: "/gestor/alertas" },
+      { name: "Alertas", path: "/alertas" },
       { name: "Reportes", path: "/gestor/reportes" },
     ],
     3: [

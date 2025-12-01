@@ -1,19 +1,154 @@
 import { useNavigate } from "react-router-dom";
 import { useState, useRef, useEffect } from "react";
 import { Bell, User, Menu, CheckCircle, AlertCircle } from "lucide-react";
+import { getUltimasAlertas, markAlertaInactiva } from "../services/alertaService";
+import { supabase } from "../supabase/client"; // importa tu cliente
+import { toast } from "react-toastify";
 
 export default function Navbar({ user, onToggleSidebar, onExpandSidebar, onLogout }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const [notifOpen, setNotifOpen] = useState(false);
-  const [notifications, setNotifications] = useState([
-    { id: 1, text: "Nueva solicitud pendiente", type: "alert" },
-    { id: 2, text: "Inventario actualizado", type: "info" },
-  ]);
+  const [notifications, setNotifications] = useState([]);
 
   const menuRef = useRef(null);
   const notifRef = useRef(null);
   const navigate = useNavigate();
 
+  // Cargar últimas alertas al montar o cuando cambie el usuario
+  useEffect(() => {
+    if (!user) return;
+    async function fetchAlerts() {
+      try {
+        const data = await getUltimasAlertas(3);
+        const mapped = data.map((a) => ({
+          id: a.idAlerta,
+          text: a.mensaje,
+          type: a.tipo === "stock_minimo" ? "alert" : "info",
+        }));
+        setNotifications(mapped);
+      } catch (err) {
+        console.error("Error cargando alertas:", err.message);
+      }
+    }
+    fetchAlerts();
+  }, [user]);
+
+  // DEBUG: Suscripción adicional sin filtro para verificar si llegan INSERT/UPDATE desde Supabase
+  // Quitar o comentar esta sección cuando se confirme el comportamiento
+  useEffect(() => {
+    if (!user) return;
+    const debugChan = supabase.channel('alertas-debug-channel');
+
+    debugChan.on(
+      'postgres_changes',
+      { event: 'INSERT', schema: 'public', table: 'alerta' },
+      (payload) => {
+        console.log('[debug realtime] INSERT sin filtro:', payload);
+      }
+    );
+
+    debugChan.on(
+      'postgres_changes',
+      { event: 'UPDATE', schema: 'public', table: 'alerta' },
+      (payload) => {
+        console.log('[debug realtime] UPDATE sin filtro:', payload);
+      }
+    );
+
+    debugChan.subscribe((status) => console.log('[debug realtime] channel status', status));
+
+    return () => supabase.removeChannel(debugChan);
+  }, [user]);
+
+  // Suscripción en tiempo real a la tabla alerta
+  useEffect(() => {
+    if (!user) return;
+
+    // crear un canal por usuario para filtrar en el servidor y evitar sobrecarga
+    const chanName = `alertas-channel-${user.idUsuario}`;
+    const channel = supabase.channel(chanName, { config: {} });
+
+    // Nuevo insert: agregar notificación y mostrar toast
+    channel.on(
+      "postgres_changes",
+      { event: "INSERT", schema: "public", table: "alerta", filter: `idUsuario=eq.${user.idUsuario}` },
+      (payload) => {
+        console.log("[realtime] INSERT payload:", payload);
+        const nueva = payload.new;
+        // la alerta insertada ya corresponde al usuario por el filtro
+        if (nueva.estado === "activa") {
+          // If this is a stock_minimo alert and the client temporarily suppressed such alerts, ignore it
+          if (nueva.tipo === 'stock_minimo' && typeof window !== 'undefined' && window.__suppressStockAlert) {
+            console.log('[realtime] stock_minimo alert suppressed by client flag');
+            return;
+          }
+          const alerta = {
+            id: nueva.idAlerta,
+            text: nueva.mensaje,
+            type: nueva.tipo === "stock_minimo" ? "alert" : "info",
+          };
+          setNotifications((prev) => [alerta, ...prev].slice(0, 3));
+          toast.info(nueva.mensaje || "Nueva alerta", { autoClose: 5000 });
+        }
+      }
+    );
+
+    // Update: si cambia estado, remover o actualizar la notificación
+    channel.on(
+      "postgres_changes",
+      { event: "UPDATE", schema: "public", table: "alerta", filter: `idUsuario=eq.${user.idUsuario}` },
+      (payload) => {
+        console.log("[realtime] UPDATE payload:", payload);
+        const nuevo = payload.new;
+        if (nuevo.estado && nuevo.estado !== "activa") {
+          setNotifications((prev) => prev.filter((n) => n.id !== nuevo.idAlerta));
+        } else if (nuevo.estado === "activa") {
+          if (nuevo.tipo === 'stock_minimo' && typeof window !== 'undefined' && window.__suppressStockAlert) {
+            console.log('[realtime] UPDATE stock_minimo alert suppressed by client flag');
+            return;
+          }
+          const alerta = {
+            id: nuevo.idAlerta,
+            text: nuevo.mensaje,
+            type: nuevo.tipo === "stock_minimo" ? "alert" : "info",
+          };
+          setNotifications((prev) => [alerta, ...prev].slice(0, 3));
+          toast.info(nuevo.mensaje || "Nueva alerta", { autoClose: 5000 });
+        }
+      }
+    );
+
+    channel.subscribe((status) => {
+      console.log("[realtime] channel status:", status);
+    });
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [user]);
+
+  // Escuchar evento local cuando createAlerta se ejecuta en este cliente
+  useEffect(() => {
+    const handler = (e) => {
+      const nueva = e.detail;
+      console.log("[local event] alerta:created", nueva);
+      if (!nueva) return;
+      if (nueva.idUsuario === user?.idUsuario && nueva.estado === "activa") {
+        const alerta = {
+          id: nueva.idAlerta,
+          text: nueva.mensaje,
+          type: nueva.tipo === "stock_minimo" ? "alert" : "info",
+        };
+        setNotifications((prev) => [alerta, ...prev].slice(0, 3));
+        toast.info(nueva.mensaje || "Nueva alerta", { autoClose: 5000 });
+      }
+    };
+
+    window.addEventListener("alerta:created", handler);
+    return () => window.removeEventListener("alerta:created", handler);
+  }, [user]);
+
+  // Cerrar menús al hacer click fuera
   useEffect(() => {
     const handleClickOutside = (e) => {
       if (
@@ -48,7 +183,6 @@ export default function Navbar({ user, onToggleSidebar, onExpandSidebar, onLogou
         </button>
       </div>
 
-      {/* Parte derecha */}
       <div className="flex items-center gap-4">
         {/* Notificaciones */}
         <div className="relative" ref={notifRef}>
@@ -73,10 +207,21 @@ export default function Navbar({ user, onToggleSidebar, onExpandSidebar, onLogou
                 </p>
               ) : (
                 notifications.map((n) => (
-                  <div
-                    key={n.id}
-                    className="flex items-center gap-3 px-4 py-2 hover:bg-gray-100/60 cursor-pointer"
-                  >
+                        <div
+                          key={n.id}
+                          onClick={async () => {
+                            try {
+                              await markAlertaInactiva(n.id);
+                              // actualizar UI localmente para remover la notificación
+                              setNotifications((prev) => prev.filter((x) => x.id !== n.id));
+                              setNotifOpen(false);
+                              navigate(`/alertas/${n.id}`);
+                            } catch (err) {
+                              console.error("Error marcando alerta inactiva:", err.message);
+                            }
+                          }}
+                          className="flex items-center gap-3 px-4 py-2 hover:bg-gray-100/60 cursor-pointer"
+                        >
                     {n.type === "alert" ? (
                       <AlertCircle className="text-yellow-500 w-5 h-5" />
                     ) : (

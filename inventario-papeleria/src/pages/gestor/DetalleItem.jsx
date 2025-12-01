@@ -7,6 +7,7 @@ import {
   getCategorias,
   uploadItemImage,
 } from "../../services/itemsService";
+import { generateQrForItem } from "../../services/qrService";
 import {
   Package,
   Trash2,
@@ -29,6 +30,9 @@ export default function DetalleItem() {
   const [preview, setPreview] = useState(null);
   const [stockOriginal, setStockOriginal] = useState(null);
   const [motivoAjuste, setMotivoAjuste] = useState("");
+  const [showQrModal, setShowQrModal] = useState(false);
+  const [qrUrl, setQrUrl] = useState(null);
+  const [generatingQr, setGeneratingQr] = useState(false);
 
 
   useEffect(() => {
@@ -43,6 +47,7 @@ export default function DetalleItem() {
       setItem(data);
       setForm(data);
       setPreview(data.imagen);
+      setQrUrl(data.qr || null);
       setStockOriginal(data.stockReal);
     } catch (err) {
       toast.error("Error al cargar el ítem.");
@@ -158,6 +163,38 @@ export default function DetalleItem() {
             className="flex items-center justify-center gap-2 bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition w-full sm:w-auto"
           >
             <Trash2 size={18} /> Eliminar
+          </button>
+          <button
+            onClick={async () => {
+              // Open modal; if no qr -> generate
+              if (!qrUrl) {
+                setGeneratingQr(true);
+                try {
+                  const url = await generateQrForItem(item);
+                  // store url in item.qr via updateItem
+                  // suppress possible stock_minimo alerts triggered by DB triggers
+                  try {
+                    window.__suppressStockAlert = true;
+                    setTimeout(() => { delete window.__suppressStockAlert; }, 2000);
+                  } catch (e) {}
+                  await updateItem(id, { qr: url });
+                  setQrUrl(url);
+                  setForm({ ...form, qr: url });
+                  toast.success('QR generado y subido al bucket.');
+                } catch (err) {
+                  console.error(err);
+                  toast.error('Error generando QR: ' + (err.message || err));
+                } finally {
+                  setGeneratingQr(false);
+                  setShowQrModal(true);
+                }
+              } else {
+                setShowQrModal(true);
+              }
+            }}
+            className="flex items-center justify-center gap-2 bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition w-full sm:w-auto"
+          >
+            QR
           </button>
         </div>
       </div>
@@ -276,6 +313,54 @@ export default function DetalleItem() {
       </div>
 
       <ToastContainer />
+
+      {showQrModal && (
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 max-w-md w-full">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-semibold">Código QR - {item.nombre}</h3>
+              <button onClick={() => setShowQrModal(false)} className="text-slate-500">Cerrar</button>
+            </div>
+            <div className="flex flex-col items-center gap-4">
+              {generatingQr ? (
+                <div className="text-slate-600">Generando QR...</div>
+              ) : qrUrl ? (
+                <img src={qrUrl} alt={`QR ${item.nombre}`} className="h-64 w-64 object-contain" />
+              ) : (
+                <div className="text-slate-500">No hay QR disponible.</div>
+              )}
+
+              <div className="flex gap-2 mt-2">
+                {qrUrl && (
+                  <a href={qrUrl} download={`qr_item_${item.idItem}.png`} className="bg-green-600 text-white px-3 py-1 rounded">Descargar</a>
+                )}
+                <button
+                  className="bg-gray-200 px-3 py-1 rounded"
+                  onClick={async () => {
+                    // Regenerar
+                    setGeneratingQr(true);
+                    try {
+                      const url = await generateQrForItem(item);
+                      try {
+                        window.__suppressStockAlert = true;
+                        setTimeout(() => { delete window.__suppressStockAlert; }, 2000);
+                      } catch (e) {}
+                      await updateItem(id, { qr: url });
+                      setQrUrl(url);
+                      toast.success('QR regenerado.');
+                    } catch (err) {
+                      console.error(err);
+                      toast.error('Error regenerando QR.');
+                    } finally {
+                      setGeneratingQr(false);
+                    }
+                  }}
+                >Regenerar</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

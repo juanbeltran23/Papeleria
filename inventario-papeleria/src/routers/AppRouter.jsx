@@ -8,6 +8,8 @@ import RegistrarItem from "../pages/gestor/RegistrarItem";
 import DetalleItem from "../pages/gestor/DetalleItem";
 import SolicitanteDashboard from "../pages/solicitante/SolicitanteDashboard";
 import Perfil from "../pages/Perfil";
+import HistorialAlerta from "../pages/alertas/HistorialAlerta";
+import DetalleAlerta from "../pages/alertas/DetalleAlerta";
 import Layout from "../layouts/MainLayout";
 import ProtectedRoute from "../components/ProtectedRoute";
 import RegistrarEntrada from "../pages/gestor/RegistrarEntrada";
@@ -20,9 +22,11 @@ import Devoluciones from "../pages/gestor/Devoluciones";
 import DetalleDevolucion from "../pages/gestor/DetalleDevolucion";
 import Inventario from "../pages/gestor/Inventario";
 import Trazabilidad from "../pages/admin/Trazabilidad";
+import Reports from "../pages/admin/Reports";
 import CrearSolicitud from "../pages/solicitante/CrearSolicitud";
 import SolicitudesPanel from "../pages/admin/SolicitudesPanel";
 import HistorialSolicitudes from "../pages/solicitante/HistorialSolicitudes";
+import ReportsGestor from "../pages/gestor/ReportsGestor";
 
 export default function AppRouter() {
   return (
@@ -43,6 +47,7 @@ export default function AppRouter() {
           <Route path="/admin" element={<AdminDashboard />} />
           <Route path="/admin/gestores" element={<GestorPanel />} />
           <Route path="/admin/movimientos" element={<Trazabilidad />} />
+          <Route path="/admin/reportes" element={<Reports />} />
           {/* Detalles admin */}
           <Route path="/admin/salida/:id" element={<DetalleSalida rol="admin" />} />
           <Route path="/admin/devolucion/:id" element={<DetalleDevolucion rol="admin" />} />
@@ -69,6 +74,7 @@ export default function AppRouter() {
           <Route path="/gestor/registrar-devolucion" element={<RegistrarDevolucion />} />
           <Route path="/gestor/devolucion/:id" element={<DetalleDevolucion rol="gestor" />} />
           <Route path="/gestor/inventario" element={<Inventario />} />
+          <Route path="/gestor/reportes" element={<ReportsGestor />} />
         </Route>
 
         {/* SOLICITANTE */}
@@ -93,6 +99,8 @@ export default function AppRouter() {
           }
         >
           <Route path="/perfil" element={<Perfil />} />
+          <Route path="/alertas" element={<HistorialAlerta />} />
+          <Route path="/alertas/:id" element={<DetalleAlerta />} />
         </Route>
 
         {/* Redirección por defecto */}
