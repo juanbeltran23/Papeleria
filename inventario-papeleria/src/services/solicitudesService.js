@@ -1,6 +1,6 @@
-import { supabase } from "../supabase/client";
-import { getCurrentUser } from "./auth";
-import { createAlerta } from "./alertaService";
+import { supabase } from "../supabase/client.jsx";
+import { getCurrentUser } from "./auth.js";
+import { createAlerta } from "./alertaService.js";
 
 /**
  * Crea una solicitud:

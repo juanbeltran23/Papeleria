@@ -1,6 +1,6 @@
-import { supabase } from "../supabase/client";
-import { uploadImageToBucket } from "./uploadService";
-import { getCurrentUser } from "./auth";
+import { supabase } from "../supabase/client.jsx";
+import { uploadImageToBucket } from "./uploadService.jsx";
+import { getCurrentUser } from "./auth.js";
 
 // 🖼️ Subir imagen al bucket específico de ítems
 export async function uploadItemImage(file) {

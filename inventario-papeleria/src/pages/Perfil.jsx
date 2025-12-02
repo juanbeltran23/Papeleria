@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { getCurrentUser } from "../services/auth";
+import { getCurrentUser } from "../services/auth.js";
 import { updateUsuario } from "../services/usuarioService";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";

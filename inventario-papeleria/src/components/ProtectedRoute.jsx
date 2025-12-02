@@ -1,7 +1,7 @@
 // src/components/ProtectedRoute.jsx
 import { Navigate } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { getCurrentUser } from "../services/auth";
+import { getCurrentUser } from "../services/auth.js";
 
 export default function ProtectedRoute({ allowedRole, children }) {
   const [user, setUser] = useState(null);

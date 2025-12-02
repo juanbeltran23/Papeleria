@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { getItems } from "../../services/itemsService";
-import { getCurrentUser } from "../../services/auth";
+import { getCurrentUser } from "../../services/auth.js";
 import { toast } from "react-toastify";
 import { createSolicitud } from "../../services/solicitudesService";
 import {

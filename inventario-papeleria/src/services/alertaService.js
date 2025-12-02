@@ -1,5 +1,5 @@
 import { supabase } from "../supabase/client";
-import { getCurrentUser } from "./auth";
+import { getCurrentUser } from "./auth.js";
 
 /**
  * Crear una alerta para un usuario

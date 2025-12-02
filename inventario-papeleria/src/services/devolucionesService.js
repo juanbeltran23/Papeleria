@@ -1,5 +1,5 @@
-import { supabase } from "../supabase/client";
-import { getCurrentUser } from "./auth";
+import { supabase } from "../supabase/client.jsx";
+import { getCurrentUser } from "./auth.js";
 
 /**
  * Crea una nueva devolucion con sus ítems, descuenta stock y registra movimientos.

@@ -1,6 +1,6 @@
-  import { supabase } from "../supabase/client";
-  import { getItemById } from "./itemsService";
-  import { getCurrentUser } from "./auth";
+  import { supabase } from "../supabase/client.jsx";
+  import { getItemById } from "./itemsService.jsx";
+  import { getCurrentUser } from "./auth.js";
 
 
 // Crear inventario físico
