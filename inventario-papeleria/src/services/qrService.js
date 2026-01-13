@@ -10,9 +10,9 @@ export async function generateQrForItem(item) {
   // Contenido: una URL al detalle del ítem y metadatos básicos
   const origin = typeof window !== 'undefined' ? window.location.origin : '';
   const payload = JSON.stringify({
-    idItem: item.idItem,
     codigo: item.codigo,
     nombre: item.nombre,
+    stockReal: item.stockReal,
     url: `${origin}/items/${item.idItem}`,
   });
 
