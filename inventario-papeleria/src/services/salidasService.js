@@ -1,6 +1,6 @@
-import { supabase } from "../supabase/client.jsx";
+import { supabase } from "../supabase/client.js";
 import { getCurrentUser } from "./auth.js";
-import { uploadImageToBucket } from "./uploadService.jsx";
+import { uploadImageToBucket } from "./uploadService.js";
 
 /**
  * Crea una nueva salida con sus ítems, descuenta stock y registra movimientos.

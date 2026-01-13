@@ -1,4 +1,4 @@
-import { supabase } from "../supabase/client.jsx";
+import { supabase } from "../supabase/client.js";
 import { getCurrentUser } from "./auth.js";
 
 /**

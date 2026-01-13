@@ -1,5 +1,5 @@
-  import { supabase } from "../supabase/client.jsx";
-  import { getItemById } from "./itemsService.jsx";
+  import { supabase } from "../supabase/client.js";
+  import { getItemById } from "./itemsService.js";
   import { getCurrentUser } from "./auth.js";
 
 

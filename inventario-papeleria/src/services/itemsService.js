@@ -1,5 +1,5 @@
-import { supabase } from "../supabase/client.jsx";
-import { uploadImageToBucket } from "./uploadService.jsx";
+import { supabase } from "../supabase/client.js";
+import { uploadImageToBucket } from "./uploadService.js";
 import { getCurrentUser } from "./auth.js";
 
 // 🖼️ Subir imagen al bucket específico de ítems
